@@ -3,12 +3,8 @@ title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
-  - ruby
-  - python
-  - javascript
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
   - <a href='https://github.com/slatedocs/slate'>Documentation Powered by Slate</a>
 
 includes:
@@ -21,27 +17,12 @@ code_clipboard: true
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
-
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
-
-This example API documentation page was created with [Slate](https://github.com/slatedocs/slate). Feel free to edit it and use it as a base for your own API's documentation.
+Veeks (API Docs).
+I've left out the creating and update (PUT) routes for now, till we agree on the structure/contract.
 
 # Authentication
 
 > To authorize, use this code:
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
 
 ```shell
 # With shell, you can just pass the correct header with each request
@@ -49,17 +30,12 @@ curl "api_endpoint_here" \
   -H "Authorization: meowmeowmeow"
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
 
 > Make sure to replace `meowmeowmeow` with your API key.
 
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
+A valid API key will be provided.
 
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
+Veeks expects for the API key to be included in all API requests to the server in a header that looks like the following:
 
 `Authorization: meowmeowmeow`
 
@@ -67,34 +43,98 @@ Kittn expects for the API key to be included in all API requests to the server i
 You must replace <code>meowmeowmeow</code> with your personal API key.
 </aside>
 
-# Kittens
 
-## Get All Kittens
 
-```ruby
-require 'kittn'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
 
-```python
-import kittn
+# Users
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
+## Get A User
+
 
 ```shell
-curl "http://example.com/api/kittens" \
+curl -d "email=usermail" -X POST "/users/" \
   -H "Authorization: meowmeowmeow"
 ```
 
-```javascript
-const kittn = require('kittn');
+> The above command returns JSON structured like this:
 
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
+```json
+ {
+    "id": 1,
+    "email": "nujabes@seba.com",
+    "name": "Nujabes",
+    "photo": "https://abc.jpg",
+    "watchList": [4, 5, 6],
+    "goals": [1, 2, 3],
+  }
+```
+
+This endpoint retrieves the user by email.
+
+
+### HTTP Request
+
+`POST /users`
+
+### Query Parameters
+
+Parameter | Description
+--------- | -----------
+email | Email of the user to retrieve
+
+
+# Goals
+
+## Get A Goal
+
+
+```shell
+curl "/goals/1" \
+  -H "Authorization: meowmeowmeow"
+```
+
+> The above command returns JSON structured like this:
+
+```json
+ {
+    "id": 1,
+    "userId": 1,
+    "title": "Make a million dollars.",
+    "inviteLink": "https://invite.com/1",
+    "status": "Ongoing",
+    "progress": 20,
+    "steps": [
+      {
+        "id": 1,
+        "goalId": 1,
+        "name": "Rob a bank",
+        "Description": "Description ...",
+        "done": false,
+      },
+    ]
+  }
+```
+
+This endpoint retrieves the goal by id.
+
+
+### HTTP Request
+
+`GET /goals/<ID>`
+
+### Query Parameters
+
+Parameter | Description
+--------- | -----------
+ID | ID of goal to retrieve
+
+
+## Get A Goal Progress Logs
+
+```shell
+curl "/goals/1/progress" \
+  -H "Authorization: meowmeowmeow"
 ```
 
 > The above command returns JSON structured like this:
@@ -103,139 +143,63 @@ let kittens = api.kittens.get();
 [
   {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
+    "content": "Started goal: Make a million bucks.".
   },
   {
     "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "content": "Completed Step 1: Rob a bank"
   }
 ]
 ```
 
-This endpoint retrieves all kittens.
+This endpoint retrieves the progress logs for a goal.
 
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+`GET /goals/<ID>/progress`
 
 ### Query Parameters
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+Parameter | Description
+--------- | -----------
+ID | ID of goal to retrieve
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
 
-## Get a Specific Kitten
 
-```ruby
-require 'kittn'
+# Steps
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
+## Get A Goal Step
 
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
 
 ```shell
-curl "http://example.com/api/kittens/2" \
+curl "/steps/1" \
   -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
 ```
 
 > The above command returns JSON structured like this:
 
 ```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
+  {
+    "id": 1,
+    "goalId": 1,
+    "name": "Rob a bank",
+    "Description": "Description ...",
+    "done": false,
+  }
 ```
 
-This endpoint retrieves a specific kitten.
+This endpoint retrieves the step by id.
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
 
 ### HTTP Request
 
-`GET http://example.com/kittens/<ID>`
+`GET /steps/<ID>`
 
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2" \
-  -X DELETE \
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
+### Query Parameters
 
 Parameter | Description
 --------- | -----------
-ID | The ID of the kitten to delete
+ID | ID of step to retrieve
+
+
 
